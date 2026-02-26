@@ -1,13 +1,9 @@
-FROM nvcr.io/nvidia/cuda:12.8.0-cudnn-devel-ubuntu22.04
+FROM pytorch/pytorch:2.7.0-cuda12.8-cudnn9-devel
 
 # apt 패키지 설치
 COPY packages.txt .
 RUN apt-get update && xargs apt-get install -y < packages.txt \
     && rm -rf /var/lib/apt/lists/*
-
-# PyTorch 설치 (CUDA 12.8)
-RUN pip install torch==2.7.0 torchvision torchaudio \
-    --index-url https://download.pytorch.org/whl/cu128
 
 # pip 패키지 설치
 COPY requirements.txt .
