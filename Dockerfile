@@ -5,10 +5,6 @@ COPY packages.txt .
 RUN apt-get update && xargs apt-get install -y < packages.txt \
     && rm -rf /var/lib/apt/lists/*
 
-# pip 패키지 설치
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
 # 작업 디렉토리 설정
 WORKDIR /workspace
 
