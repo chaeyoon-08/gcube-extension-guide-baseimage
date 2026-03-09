@@ -16,9 +16,9 @@ Base: [pytorch/pytorch:2.7.0-cuda12.8-cudnn9-devel](https://hub.docker.com/r/pyt
 - GPU Architecture: Ada Lovelace(sm_89), Blackwell(sm_120)
 - apt: `git` `curl` `wget` `zstd`
 
-## 필수 환경변수
+## 환경변수
 
-- 누락 시 컨테이너 즉시 종료
+Git 연동이 필요한 경우 아래 환경변수를 설정하세요. **미설정 시 Git 구성 없이 컨테이너가 정상 실행됩니다.**
 
 | 환경변수 | 설명 |
 |----------|------|
@@ -26,17 +26,19 @@ Base: [pytorch/pytorch:2.7.0-cuda12.8-cudnn9-devel](https://hub.docker.com/r/pyt
 | `GIT_USER_EMAIL` | GitHub 이메일 |
 | `GIT_TOKEN` | GitHub Personal Access Token (`repo` scope) |
 
-## entrypoint 동작
+> ⚠️ 3개 중 하나라도 누락되면 Git 설정 전체가 스킵됩니다.
 
+## entrypoint 동작
 ```mermaid
 flowchart TD
     A([컨테이너 시작]) --> B{필수 환경변수 검증}
-    B -- 누락 --> C([exit 1])
+    B -- 누락 --> C[Git 구성 스킵]
     B -- 통과 --> D[git init /workspace]
     D --> E[git config user.name / user.email]
-    E --> F[GitHub PAT 인증 설정\n~/.git-credentials]
-    F --> G{커맨드 존재?}
+    E --> F[GitHub PAT 인증 설정<br/>~/.git-credentials]
+    F --> G{시작명령어 존재?}
+    C --> G
     G -- Yes --> H[백그라운드 실행]
     G -- No --> I
-    H --> I([tail -f /dev/null\n컨테이너 상시 유지])
+    H --> I([tail -f /dev/null<br/>컨테이너 상시 유지])
 ```
